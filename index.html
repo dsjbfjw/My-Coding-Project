@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>ANIMATION LESSON</title>
+    <style>
+      #Luffy {
+        background-color: ur;
+        height: 300px;
+      }
+      table,
+      th,
+      td {
+        margin: 2px auto;
+        border-left-color: darkblue;
+        border-bottom-color: mediumblue;
+        border-top-color: mediumblue;
+        border-right-color: blue;
+      }
+    </style>
+  </head>
+  <body>
+    <table>
+      <tr>
+        <th>my favorite anime</th>
+      </tr>
+
+      <tr>
+        <td>
+          <div id="Luffy">
+            <img src="seven d s.jpeg" />
+          </div>
+        </td>
+        <td>
+          <img src="one piece.jpeg" />
+        </td>
+        <td>
+          <img src="naruto.jpeg" />
+        </td>
+      </tr>
+    </table>
+    <canvas id="myCanvas" width="1000" height="570"></canvas>
+
+    <script>
+      // JavaScript code goes here
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      //MAKE A REFERENCE FOR YOUR CANVAS
+      var canvas = $("myCanvas");
+      var ctx = canvas.getContext("2d");
+
+      //MAKE A SPRITE CLASS
+      function Sprite(
+        img,
+        height,
+        width,
+        x,
+        y,
+        scaledHeight,
+        scaledWidth,
+        idlecycle,
+        frameY,
+        player
+      ) {
+        this.img = img;
+        this.height = height;
+        this.width = width;
+        this.x = x;
+        this.y = y;
+        this.scaledHeight = scaledHeight;
+        this.scaledWidth = scaledWidth;
+        this.idlecycle = idlecycle;
+        this.frameY = frameY;
+        this.player = player;
+
+        this.spritesheet = new Image();
+        this.cycle = this.idlecycle;
+        this.spritesheet.src = this.img;
+        this.spritesheet.onload = function () {};
+
+        this.currentIndex = 0;
+        this.animate = function () {
+          this.currentIndex++;
+
+          if (this.currentIndex == this.cycle.length) {
+            this.currentIndex = 0;
+          }
+          this.drawFrame(
+            this.cycle[this.currentIndex],
+            this.frameY,
+            this.x,
+            this.y
+          );
+        };
+
+        //MAKE A FUNCTION TO DRAW A SINGLE FRAME OF OUR SPREAD SHEET
+        this.drawFrame = function (pframeX, pframeY, pcanvasX, pcanvasY) {
+          //USE THE CAVNAS CONTEXT TO  DRAW OUR PICTURE
+          //PICUTRE REFERENCE
+          //X POSITION OF THE FRAME
+          //Y POSITION OF THE FRAME
+          //WIDTH
+          //HEIGHT
+          //X POSITION OF WHERE IT WILL BE ON THE CANVAS
+          //Y POSITION OF WHERE IT WILL BE ON THE CANVAS
+          //HOW WIDE WE ACTUALLY WANT IT
+          //HOW TALL WE ACTUALLY WANT IT
+          ctx.drawImage(
+            this.spritesheet,
+            pframeX * this.width,
+            pframeY * this.height,
+            this.width,
+            this.height,
+            pcanvasX,
+            pcanvasY,
+            this.scaledWidth,
+            this.scaledHeight
+          );
+        };
+      }
+      Sprite.prototype.update = function () {
+        this.animate();
+      };
+
+      var animationID;
+
+      var sprites = [];
+
+      var frameCount = 0;
+      var scale = 5;
+
+      var x = 0;
+      var y = 400;
+      var height = 32;
+      var width = 32;
+      var speed = 2;
+      var scaledHeight = height * scale;
+      var scaledWidth = width * scale;
+
+      var player = new Sprite(
+        "spritesheet2.png",
+        height,
+        width,
+        x,
+        y,
+        scaledHeight,
+        scaledWidth,
+        [2, 0, 1, 0],
+        0,
+        "player"
+      );
+
+      sprites.push(player);
+
+      //MAKE A FUNCTION TO DRAW All OF OUR SHAPES
+      function draw() {
+        frameCount++;
+
+        if (frameCount < 10) {
+          animationID = window.requestAnimationFrame(draw);
+          return;
+        }
+
+        frameCount = 0;
+
+        //WE NEED TO CLEAR THE CANVAS EVERY TIME TO GIVE THE ILLUSION OF ANIMATION
+        //DO IT AFTER ELSE IT'LL CAUSE A FLICKER EFFECT
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (var i = 0; i < sprites.length; i++) {
+          var sprite = sprites[i];
+          sprite.update();
+        }
+
+        animationID = window.requestAnimationFrame(draw);
+      }
+
+      draw();
+    </script>
+  </body>
+</html>
